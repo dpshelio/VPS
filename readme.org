@@ -9,32 +9,6 @@
   import mpl_toolkits.mplot3d.art3d as art3d
   from mpl_toolkits.mplot3d import proj3d
 
-  def text3d(ax, xyz, s, zdir="z", size=None, angle=0, usetex=False, **kwargs):
-      """
-      Plots the string *s* on the axes *ax*, with position *xyz*, size *size*,
-      and rotation angle *angle*. *zdir* gives the axis which is to be treated as
-      the third dimension. *usetex* is a boolean indicating whether the string
-      should be run through a LaTeX subprocess or not.  Any additional keyword
-      arguments are forwarded to `.transform_path`.
-
-      Note: zdir affects the interpretation of xyz.
-      """
-      x, y, z = xyz
-      if zdir == "y":
-          xy1, z1 = (x, z), y
-      elif zdir == "x":
-          xy1, z1 = (y, z), x
-      else:
-          xy1, z1 = (x, y), z
-
-      text_path = TextPath((0, 0), s, size=size, usetex=usetex)
-      trans = Affine2D().rotate(angle).translate(xy1[0], xy1[1])
-      # FIXME modify it so the cordinate given is the center, not the starting point.
-
-      p1 = PathPatch(trans.transform_path(text_path), **kwargs)
-      ax.add_patch(p1)
-      art3d.pathpatch_2d_to_3d(p1, z=z1, zdir=zdir)
-
   class Arrow3D(FancyArrowPatch):
       """
 
@@ -70,32 +44,13 @@
   art3d.pathpatch_2d_to_3d(p, z=5, zdir="x")
 
   # Add labels N, E, S, W, Z
-  text3d(ax, (-0.5, 5, 0), zdir="y",
-         s="N",
-         size=0.5,
-         usetex=False,
-         ec="none", fc="k")
-  text3d(ax, (5, 10.5, 0), zdir="y",
-         s="E",
-         size=0.5,
-         usetex=False,
-         ec="none", fc="k")
-  text3d(ax, (10.5, 5, 0), zdir="y",
-         s="S",
-         size=0.5,
-         usetex=False,
-         ec="none", fc="k")
-  text3d(ax, (5, -0.5, 0), zdir="y",
-         s="W",
-         size=0.5,
-         usetex=False,
-         ec="none", fc="k")
-  text3d(ax, (5,5, 5.2), zdir="y",
-         s="Z",
-         size=0.5,
-         usetex=False,
-         ec="none", fc="k")
-
+  coord = [((-0.5, 5, 0), "N"),
+             ((5, 10.5, 0), "E"),
+             ((10.5, 5, 0), "S"),
+             ((5, -0.5, 0), "W"),
+             ((5,5, 5.2), "Z")]
+  for location, label in coord:
+      ax.text(*location, label, None, horizontalalignment='center', size='medium')
 
   # Display NP and equator
   latitude = 45
@@ -106,11 +61,8 @@
   arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
   a = Arrow3D(*zip(center, north_pole), **arrow_prop_dict)
   ax.add_artist(a)
-  text3d(ax, north_pole, zdir="y",
-         s="NP",
-         size=0.5,
-         usetex=False,
-         ec="none", fc="k")
+  ax.text(*north_pole, "NP", None, horizontalalignment='center', size='medium')
+
   ax.set_xlim(-1, 11)
   ax.set_ylim(-1, 11)
   ax.set_zlim(-6, 6)
