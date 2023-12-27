@@ -7,6 +7,8 @@
   from matplotlib.text import TextPath
   from matplotlib.transforms import Affine2D
   import mpl_toolkits.mplot3d.art3d as art3d
+  from mpl_toolkits.mplot3d import proj3d
+
   def text3d(ax, xyz, s, zdir="z", size=None, angle=0, usetex=False, **kwargs):
       """
       Plots the string *s* on the axes *ax*, with position *xyz*, size *size*,
@@ -32,6 +34,24 @@
       p1 = PathPatch(trans.transform_path(text_path), **kwargs)
       ax.add_patch(p1)
       art3d.pathpatch_2d_to_3d(p1, z=z1, zdir=zdir)
+
+  class Arrow3D(FancyArrowPatch):
+      """
+
+      From: https://stackoverflow.com/a/74122407/1087595 by https://stackoverflow.com/users/3157428/ruli
+      """
+      def __init__(self, xs, ys, zs, *args, **kwargs):
+          super().__init__((0,0), (0,0), *args, **kwargs)
+          self._verts3d = xs, ys, zs
+
+      def do_3d_projection(self, renderer=None):
+          xs3d, ys3d, zs3d = self._verts3d
+          xs, ys, zs = proj3d.proj_transform(xs3d, ys3d, zs3d, self.axes.M)
+          self.set_positions((xs[0],ys[0]),(xs[1],ys[1]))
+
+          return np.min(zs)
+
+
   fig = plt.figure()
   ax = fig.add_subplot(projection='3d')
 
@@ -76,6 +96,21 @@
          usetex=False,
          ec="none", fc="k")
 
+
+  # Display NP and equator
+  latitude = 45
+  lat_r = np.deg2rad(latitude)
+  center = (5, 5, 0)
+  north_pole = (5 - 5.3 * np.cos(lat_r), 5, 5.3 * np.sin(lat_r))
+  #ax.arrow(*zip(center, np), 0)
+  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
+  a = Arrow3D(*zip(center, north_pole), **arrow_prop_dict)
+  ax.add_artist(a)
+  text3d(ax, north_pole, zdir="y",
+         s="NP",
+         size=0.5,
+         usetex=False,
+         ec="none", fc="k")
   ax.set_xlim(-1, 11)
   ax.set_ylim(-1, 11)
   ax.set_zlim(-6, 6)
