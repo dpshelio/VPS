@@ -129,6 +129,21 @@
   ax.add_patch(p)
   pathpatch_2d_to_3d(p, z=0, normal=np_normal)
   pathpatch_translate(p, (5, 5, 0))
+  lat_symbol = (5 - 2.5 * np.cos(lat_r / 2), 5, 2.5 * np.sin(lat_r / 2))
+  ax.text(*lat_symbol, r"$\phi$", None, horizontalalignment='center', size='medium')
+  # arrow
+  steps = np.linspace(0, lat_r, 10)
+  steps_arrow = np.array([5, 5, 0])[:, np.newaxis] + np.vstack((-2 *np.cos(steps), np.zeros(10), 2 * np.sin(steps)))
+  print(steps_arrow.shape)
+  ax.plot(steps_arrow[0,:], steps_arrow[1,:], steps_arrow[2,:])
+  # Arrow3D only works with two coordinates, therefore we need to create two parts
+  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
+  arrow_top = Arrow3D(steps_arrow[0,-2:], steps_arrow[1,-2:], steps_arrow[2,-2:], **arrow_prop_dict)
+  ax.add_artist(arrow_top)
+  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='<|-', color='k', shrinkA=0, shrinkB=0)
+  arrow_bottom = Arrow3D(steps_arrow[0,0:2], steps_arrow[1,0:2], steps_arrow[2,0:2], **arrow_prop_dict)
+  ax.add_artist(arrow_bottom)
+
 
   ax.set_xlim(-1, 11)
   ax.set_ylim(-1, 11)
