@@ -1,4 +1,8 @@
 * Visualiser of Positional Astronomy concepts
+#+PROPERTY: header-args:python :session visualise
+#+PROPERTY: header-args:python+ :async yes
+
+
 #+begin_src python
   import matplotlib.pyplot as plt
   import numpy as np
@@ -148,12 +152,6 @@
   arrow_bottom = Arrow3D(steps_arrow[0,0:2], steps_arrow[1,0:2], steps_arrow[2,0:2], **arrow_prop_dict)
   ax.add_artist(arrow_bottom)
 
-
-  ax.set_xlim(-1, 11)
-  ax.set_ylim(-1, 11)
-  ax.set_zlim(-6, 6)
-  ax.set_aspect('equal')
-  plt.show()
 ** Plot fix declination paths
 ** Show RA and declination angles
 ** Plot analemma
@@ -161,5 +159,17 @@
 ** Provide same graph from different point-of-view
    side view, top view
 ** Remove or shade the lines below the horizont
+** Visualise all
+
+
+#+begin_src python
+  ax.set_xlim(-1, 11)
+  ax.set_ylim(-1, 11)
+  ax.set_zlim(-6, 6)
+  ax.set_aspect('equal')
+  plt.show()
+
+#+end_src
+
 
 
