@@ -117,6 +117,10 @@
 
   # Display NP and equator
   latitude = 45
+  if latitude < 0:
+      raise NotImplementedError("South hemisphere latitudes haven't been implemented yet")
+  if latitude > 90:
+      raise ValueError("Latitude can't be larger than 90º")
   lat_r = np.deg2rad(latitude)
   center = (5, 5, 0)
   north_pole = (5 - 5.3 * np.cos(lat_r), 5, 5.3 * np.sin(lat_r))
