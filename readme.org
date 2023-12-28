@@ -154,3 +154,12 @@
   ax.set_zlim(-6, 6)
   ax.set_aspect('equal')
   plt.show()
+** Plot fix declination paths
+** Show RA and declination angles
+** Plot analemma
+   Using coordinates from astropy.
+** Provide same graph from different point-of-view
+   side view, top view
+** Remove or shade the lines below the horizont
+
+
