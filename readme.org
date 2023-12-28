@@ -153,6 +153,24 @@
   ax.add_artist(arrow_bottom)
 
 ** Plot fix declination paths
+
+Same circle than for equator, but with a smaller radius and at a height.
+
+#+begin_src python
+  dec = -23.5
+  if not -90 <= dec <= 90:
+      raise ValueError("Declination can't be outside the range [-90º, 90º]")
+  dec_r = np.deg2rad(dec)
+  center = (5, 5, 0)
+  radius = 5 * np.cos(dec_r)
+  radius_axis = 5 * np.sin(dec_r)
+  p = Circle((0, 0), radius, facecolor = 'r', linestyle='-', alpha=0.05) #Add a circle in the xy plane
+  ax.add_patch(p)
+  print(radius_axis * np.cos(lat_r))
+  pathpatch_2d_to_3d(p, z=radius_axis * np.sin(lat_r), normal=np_normal)
+  pathpatch_translate(p, (5 - radius_axis * np.cos(lat_r), 5, 0))
+#+end_src
+
 ** Show RA and declination angles
 ** Plot analemma
    Using coordinates from astropy.
