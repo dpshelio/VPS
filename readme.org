@@ -209,8 +209,9 @@ For this we need to set the position of the aries point. For now we're setting o
       raise ValueError("Aries point should be in a [0,365] range")
   aries_r = np.deg2rad(aries)
   equator_angle = - (np.pi/2 - lat_r)
-  aries_point = (5 - 5.4 * np.cos(aries_r)*np.cos(equator_angle), 5 + 5.4 * np.sin(aries_r)*np.cos(equator_angle) , 5.4 * np.sin(equator_angle)*np.cos(aries_r))
-  # FIXME - the projection is more or less right, but its radius is not.
+  aries_point = (5 - 5.4 * np.cos(aries_r)*np.cos(equator_angle),
+                 5 + 5.4 * np.sin(aries_r),
+                     5.4 * np.sin(equator_angle)*np.cos(aries_r))
   arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
   a = Arrow3D(*zip(center, aries_point), **arrow_prop_dict)
   ax.add_artist(a)
@@ -231,9 +232,9 @@ And now, the right ascension  angle.
   # FIXME it should be given as h,m,s
   ra_r = np.deg2rad(ra)
   ra_steps = np.linspace(0, ra_r, 100)
-  ra_points = np.vstack((5-5.4 * np.cos(aries_r + ra_steps)*np.cos(equator_angle),
-                        5+ 5.4 * np.sin(aries_r + ra_steps)*np.cos(equator_angle),
-                        0+ 5.4 * np.sin(equator_angle) * np.cos(aries_r + ra_steps)))
+  ra_points = np.vstack((5 - 5 * np.cos(aries_r + ra_steps)*np.cos(equator_angle),
+                         5 + 5 * np.sin(aries_r + ra_steps),
+                         0 + 5 * np.sin(equator_angle) * np.cos(aries_r + ra_steps)))
   ax.plot(ra_points[0,:], ra_points[1,:], ra_points[2,:], color='r')
   arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
   arrow_top = Arrow3D(ra_points[0,-2:], ra_points[1,-2:], ra_points[2,-2:], **arrow_prop_dict)
