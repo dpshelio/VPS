@@ -172,6 +172,23 @@ Same circle than for equator, but with a smaller radius and at a height.
 #+end_src
 
 ** Show RA and declination angles
+
+*** declination
+#+begin_src python
+  dec_symbol = (5 + 5.2 * np.cos(np.pi/2 - lat_r + dec_r / 2), 5, 5.2 * np.sin(np.pi/2 - lat_r  + dec_r / 2))
+  ax.text(*dec_symbol, r"$\delta$", None, horizontalalignment='center', size='medium')
+  # arrow
+  steps = np.linspace(np.pi/2 - lat_r, np.pi/2 - lat_r + dec_r, 10)
+  steps_arrow = np.array([5, 5, 0])[:, np.newaxis] + np.vstack((5 *np.cos(steps), np.zeros(10), 5 * np.sin(steps)))
+  ax.plot(steps_arrow[0,:], steps_arrow[1,:], steps_arrow[2,:], color='r')
+  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
+  arrow_top = Arrow3D(steps_arrow[0,-2:], steps_arrow[1,-2:], steps_arrow[2,-2:], **arrow_prop_dict)
+  ax.add_artist(arrow_top)
+  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='<|-', color='k', shrinkA=0, shrinkB=0)
+  arrow_bottom = Arrow3D(steps_arrow[0,0:2], steps_arrow[1,0:2], steps_arrow[2,0:2], **arrow_prop_dict)
+  ax.add_artist(arrow_bottom)
+
+#+end_src
 ** Plot analemma
    Using coordinates from astropy.
 ** Provide same graph from different point-of-view
