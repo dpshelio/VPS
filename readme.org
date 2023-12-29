@@ -189,6 +189,24 @@ Same circle than for equator, but with a smaller radius and at a height.
   ax.add_artist(arrow_bottom)
 
 #+end_src
+*** right ascension
+For this we need to set the position of the aries point. For now we're setting one fixed.
+#+begin_src python
+
+  aries = 20 # from the North clockwise on the equator
+  # TODO - how is it normally provided?
+  if not 0 <= aries <= 365:
+      raise ValueError("Aries point should be in a [0,365] range")
+  aries_r = np.deg2rad(aries)
+  equator_angle = - (np.pi/2 - lat_r)
+  aries_point = (5 - 5.4 * np.cos(aries_r)*np.cos(equator_angle), 5 + 5.4 * np.sin(aries_r)*np.cos(equator_angle) , 5.4 * np.sin(equator_angle)*np.cos(aries_r))
+  # FIXME - the projection is more or less right, but its radius is not.
+  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
+  a = Arrow3D(*zip(center, aries_point), **arrow_prop_dict)
+  ax.add_artist(a)
+  ax.text(*aries_point, "$\gamma$", None, horizontalalignment='center', size='large')
+
+#+end_src
 ** Plot analemma
    Using coordinates from astropy.
 ** Provide same graph from different point-of-view
