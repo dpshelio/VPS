@@ -1,3 +1,13 @@
+* Emacs setup to run it
+#+begin_src elisp
+  ;; to run without being asked
+  (setq org-confirm-babel-evaluate nil)
+#+end_src
+
+- =C-x n s= to narrow tree
+- =C-c C-v C-b= to run buffer
+- =C-x n w= to widen the whole file
+
 * Visualiser of Positional Astronomy concepts
 #+PROPERTY: header-args:python :session visualise
 #+PROPERTY: header-args:python+ :async yes
@@ -253,6 +263,8 @@ And now, the right ascension  angle.
   plt.show()
 
 #+end_src
+
+* Create package
 
 
 
