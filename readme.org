@@ -162,43 +162,46 @@
   arrow_bottom = Arrow3D(steps_arrow[0,0:2], steps_arrow[1,0:2], steps_arrow[2,0:2], **arrow_prop_dict)
   ax.add_artist(arrow_bottom)
 
-** Plot fix declination paths
+** Show RA and declination angles
+*** declination
 
 Same circle than for equator, but with a smaller radius and at a height.
 
 #+begin_src python
-  dec = -23.5
-  if not -90 <= dec <= 90:
-      raise ValueError("Declination can't be outside the range [-90º, 90º]")
-  dec_r = np.deg2rad(dec)
-  center = (5, 5, 0)
-  radius = 5 * np.cos(dec_r)
-  radius_axis = 5 * np.sin(dec_r)
-  p = Circle((0, 0), radius, facecolor = 'r', linestyle='-', alpha=0.05) #Add a circle in the xy plane
-  ax.add_patch(p)
-  print(radius_axis * np.cos(lat_r))
-  pathpatch_2d_to_3d(p, z=radius_axis * np.sin(lat_r), normal=np_normal)
-  pathpatch_translate(p, (5 - radius_axis * np.cos(lat_r), 5, 0))
+  def visualise_declination(dec, lat_r, np_normal, ax):
+      # Plot fix declination paths
+      if not -90 <= dec <= 90:
+          raise ValueError("Declination can't be outside the range [-90º, 90º]")
+      dec_r = np.deg2rad(dec)
+      center = (5, 5, 0)
+      radius = 5 * np.cos(dec_r)
+      radius_axis = 5 * np.sin(dec_r)
+      p = Circle((0, 0), radius, facecolor = 'r', linestyle='-', alpha=0.05) #Add a circle in the xy plane
+      ax.add_patch(p)
+      print(radius_axis * np.cos(lat_r))
+      pathpatch_2d_to_3d(p, z=radius_axis * np.sin(lat_r), normal=np_normal)
+      pathpatch_translate(p, (5 - radius_axis * np.cos(lat_r), 5, 0))
+
+
+      dec_symbol = (5 + 5.2 * np.cos(np.pi/2 - lat_r + dec_r / 2), 5, 5.2 * np.sin(np.pi/2 - lat_r  + dec_r / 2))
+      ax.text(*dec_symbol, r"$\delta$", None, horizontalalignment='center', size='medium')
+      # arrow
+      steps = np.linspace(np.pi/2 - lat_r, np.pi/2 - lat_r + dec_r, 10)
+      steps_arrow = np.array([5, 5, 0])[:, np.newaxis] + np.vstack((5 *np.cos(steps), np.zeros(10), 5 * np.sin(steps)))
+      ax.plot(steps_arrow[0,:], steps_arrow[1,:], steps_arrow[2,:], color='r')
+      arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
+      arrow_top = Arrow3D(steps_arrow[0,-2:], steps_arrow[1,-2:], steps_arrow[2,-2:], **arrow_prop_dict)
+      ax.add_artist(arrow_top)
+      arrow_prop_dict = dict(mutation_scale=20, arrowstyle='<|-', color='k', shrinkA=0, shrinkB=0)
+      arrow_bottom = Arrow3D(steps_arrow[0,0:2], steps_arrow[1,0:2], steps_arrow[2,0:2], **arrow_prop_dict)
+      ax.add_artist(arrow_bottom)
+
+
+  #visualise_declination(23.5, lat_r, np_normal, ax)
 #+end_src
 
-** Show RA and declination angles
+#+RESULTS:
 
-*** declination
-#+begin_src python
-  dec_symbol = (5 + 5.2 * np.cos(np.pi/2 - lat_r + dec_r / 2), 5, 5.2 * np.sin(np.pi/2 - lat_r  + dec_r / 2))
-  ax.text(*dec_symbol, r"$\delta$", None, horizontalalignment='center', size='medium')
-  # arrow
-  steps = np.linspace(np.pi/2 - lat_r, np.pi/2 - lat_r + dec_r, 10)
-  steps_arrow = np.array([5, 5, 0])[:, np.newaxis] + np.vstack((5 *np.cos(steps), np.zeros(10), 5 * np.sin(steps)))
-  ax.plot(steps_arrow[0,:], steps_arrow[1,:], steps_arrow[2,:], color='r')
-  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
-  arrow_top = Arrow3D(steps_arrow[0,-2:], steps_arrow[1,-2:], steps_arrow[2,-2:], **arrow_prop_dict)
-  ax.add_artist(arrow_top)
-  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='<|-', color='k', shrinkA=0, shrinkB=0)
-  arrow_bottom = Arrow3D(steps_arrow[0,0:2], steps_arrow[1,0:2], steps_arrow[2,0:2], **arrow_prop_dict)
-  ax.add_artist(arrow_bottom)
-
-#+end_src
 *** right ascension
 For this we need to set the position of the aries point. For now we're setting one fixed.
 #+begin_src python
@@ -222,30 +225,31 @@ For this we need to set the position of the aries point. For now we're setting o
 And now, the right ascension  angle.
 
 #+begin_src python
-  # RA position
-  ra = 250 # kept at the NZS great circle for now
-  if aries > 180:
-      ra = 360 - aries + 180
-  else:
-      ra = 180 - aries
-  # FIXME there's a better way to do this
-  # FIXME it should be given as h,m,s
-  ra_r = np.deg2rad(ra)
-  ra_steps = np.linspace(0, ra_r, 100)
-  ra_points = np.vstack((5 - 5 * np.cos(aries_r + ra_steps)*np.cos(equator_angle),
-                         5 + 5 * np.sin(aries_r + ra_steps),
-                         0 + 5 * np.sin(equator_angle) * np.cos(aries_r + ra_steps)))
-  ax.plot(ra_points[0,:], ra_points[1,:], ra_points[2,:], color='r')
-  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
-  arrow_top = Arrow3D(ra_points[0,-2:], ra_points[1,-2:], ra_points[2,-2:], **arrow_prop_dict)
-  ax.add_artist(arrow_top)
-  arrow_prop_dict = dict(mutation_scale=20, arrowstyle='<|-', color='k', shrinkA=0, shrinkB=0)
-  arrow_bottom = Arrow3D(ra_points[0,0:2], ra_points[1,0:2], ra_points[2,0:2], **arrow_prop_dict)
-  ax.add_artist(arrow_bottom)
+  def visualise_ra(ra, aries, ax):
+      # RA position kept at the NZS great circle for now
+      if aries > 180:
+          ra = 360 - aries + 180
+      else:
+          ra = 180 - aries
+      # FIXME there's a better way to do this
+      # FIXME it should be given as h,m,s
+      ra_r = np.deg2rad(ra)
+      ra_steps = np.linspace(0, ra_r, 100)
+      ra_points = np.vstack((5 - 5 * np.cos(aries_r + ra_steps)*np.cos(equator_angle),
+                             5 + 5 * np.sin(aries_r + ra_steps),
+                             0 + 5 * np.sin(equator_angle) * np.cos(aries_r + ra_steps)))
+      ax.plot(ra_points[0,:], ra_points[1,:], ra_points[2,:], color='r')
+      arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
+      arrow_top = Arrow3D(ra_points[0,-2:], ra_points[1,-2:], ra_points[2,-2:], **arrow_prop_dict)
+      ax.add_artist(arrow_top)
+      arrow_prop_dict = dict(mutation_scale=20, arrowstyle='<|-', color='k', shrinkA=0, shrinkB=0)
+      arrow_bottom = Arrow3D(ra_points[0,0:2], ra_points[1,0:2], ra_points[2,0:2], **arrow_prop_dict)
+      ax.add_artist(arrow_bottom)
 
-  ra_symbol = ra_points[:, len(ra_steps)//2]
-  ax.text(*ra_symbol, r"$\alpha$", None, horizontalalignment='center', size='medium')
+      ra_symbol = ra_points[:, len(ra_steps)//2]
+      ax.text(*ra_symbol, r"$\alpha$", None, horizontalalignment='center', size='medium')
 
+  #visualise_ra(250, aries, ax)
 #+end_src
 
 ** Plot analemma
