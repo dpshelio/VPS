@@ -9,8 +9,9 @@
 - =C-x n w= to widen the whole file
 
 * Visualiser of Positional Astronomy concepts
-#+PROPERTY: header-args:python :session visualise
-#+PROPERTY: header-args:python+ :async yes
+:PROPERTIES:
+:header-args:python: :session visualise :async yes :tangle vps.py
+:END:
 
 
 #+begin_src python
@@ -130,7 +131,7 @@
       ax.text(*location, label, None, horizontalalignment='center', size='medium')
 
   # Display NP and equator
-  latitude = 45
+  latitude = 51.477811
   if latitude < 0:
       raise NotImplementedError("South hemisphere latitudes haven't been implemented yet")
   if latitude > 90:
@@ -254,6 +255,28 @@ And now, the right ascension  angle.
 
 ** Plot analemma
    Using coordinates from astropy.
+
+#+begin_src python
+  from astropy import units as u
+  from astropy.time import Time
+  from astropy.coordinates import solar_system_ephemeris, EarthLocation, AltAz
+  from astropy.coordinates import get_body_barycentric, get_body
+  def get_sun(t, loc):
+      with solar_system_ephemeris.set('builtin'):
+          sun = get_body('sun', t, loc)
+      sunaltaz = sun.transform_to(AltAz(obstime=t, location=loc))
+      sunx = 5 - 5 * np.cos(sunaltaz.az)*np.cos(sunaltaz.alt)
+      suny = 5 + 5 * np.sin(sunaltaz.az)*np.cos(sunaltaz.alt)
+      sunz = 5 * np.sin(sunaltaz.alt)
+
+      return (sunx, suny, sunz)
+
+  loc = EarthLocation.of_site('greenwich')
+  times = [ax.text(*get_sun(Time("2023-12-31 12:00") + x * u.day, loc), "☀️", None,  horizontalalignment='center', size='medium') for x in range(0, 365, 20)]
+
+  ax.text(*get_sun(Time("2023-12-31 12:00"), loc), "☀️", None,  horizontalalignment='center', size='medium')
+#+end_src
+
 ** Provide same graph from different point-of-view
    side view, top view
 ** Remove or shade the lines below the horizont
