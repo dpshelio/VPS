@@ -219,7 +219,7 @@ For this we need to set the position of the aries point. For now we're setting o
   arrow_prop_dict = dict(mutation_scale=20, arrowstyle='-|>', color='k', shrinkA=0, shrinkB=0)
   a = Arrow3D(*zip(center, aries_point), **arrow_prop_dict)
   ax.add_artist(a)
-  ax.text(*aries_point, "$\gamma$", None, horizontalalignment='center', size='large')
+  ax.text(*aries_point, "♈︎", None, horizontalalignment='center', size='large')
 
 #+end_src
 
@@ -277,9 +277,13 @@ And now, the right ascension  angle.
   ax.text(*get_sun(Time("2023-12-31 12:00"), loc), "☀️", None,  horizontalalignment='center', size='medium')
 #+end_src
 
+** Find the right Aries point
+
+** Arrows for altitud and azimuth
 ** Provide same graph from different point-of-view
    side view, top view
 ** Remove or shade the lines below the horizont
+** Add south hemisphere
 ** Visualise all
 
 
